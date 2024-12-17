@@ -114,12 +114,48 @@ A_Astronaut.Text = "Astronaut"
 A_Astronaut.TextColor3 = Color3.new(1, 1, 1)
 A_Astronaut.TextSize = 20
 A_Astronaut.MouseButton1Click:Connect(function()
-Animate.idle.Animation1.AnimationId = "http://www.roblox.com/asset/?id=616136790"
-Animate.idle.Animation2.AnimationId = "http://www.roblox.com/asset/?id=616138447"
-Animate.walk.WalkAnim.AnimationId = "http://www.roblox.com/asset/?id=4708193840"
-Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=4708192705"
-game.Players.LocalPlayer.Character.Humanoid.Jump = true
-local animTrack = plr.Character.Humanoid:WaitForChild("Animator"):LoadAnimation(Animate)
+local astronautAnimationIds = {
+    idle1 = "http://www.roblox.com/asset/?id=616136790",
+    idle2 = "http://www.roblox.com/asset/?id=616138447",
+    walk = "http://www.roblox.com/asset/?id=4708193840",
+    run = "http://www.roblox.com/asset/?id=4708192705"
+}
+
+-- Function to load an animation and wait for it to load
+local function loadAnimation(humanoid, animationId)
+    local animation = Instance.new("Animation")
+    animation.AnimationId = animationId
+    local animationTrack = humanoid:LoadAnimation(animation)
+    return animationTrack
+end
+
+A_Astronaut.MouseButton1Click:Connect(function()
+    local character = game.Players.LocalPlayer.Character
+    local humanoid = character:WaitForChild("Humanoid")
+    local animator = humanoid:WaitForChild("Animator") -- Use Animator (more modern)
+    local animateScript = character:WaitForChild("Animate")
+
+    -- Load animations (only need to do this once, ideally)
+    local astronautIdle1 = loadAnimation(humanoid, astronautAnimationIds.idle1)
+    local astronautIdle2 = loadAnimation(humanoid, astronautAnimationIds.idle2)
+    local astronautWalk = loadAnimation(humanoid, astronautAnimationIds.walk)
+    local astronautRun = loadAnimation(humanoid, astronautAnimationIds.run)
+
+    if astronautIdle1 and astronautIdle2 and astronautWalk and astronautRun then
+        -- Change animation IDs in the Animate script
+        animateScript.idle.Animation1.AnimationId = astronautAnimationIds.idle1
+        animateScript.idle.Animation2.AnimationId = astronautAnimationIds.idle2
+        animateScript.walk.WalkAnim.AnimationId = astronautAnimationIds.walk
+        animateScript.run.RunAnim.AnimationId = astronautAnimationIds.run
+
+        -- Play the loaded animations (example with idle)
+        astronautIdle1:Play()
+        astronautIdle2:Play()
+
+        print("Astronaut animations loaded and IDs changed.")
+    else
+        warn("Failed to load Astronaut animations.")
+    end
 end)
 
 A_Bubbly.Name = "A_Bubbly"
